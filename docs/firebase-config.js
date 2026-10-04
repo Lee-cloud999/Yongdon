@@ -1,5 +1,5 @@
 // Firebase 웹 앱 설정 값이에요. 비밀번호가 아니라서 공개 저장소에 있어도 괜찮아요.
-// 데이터는 아래 보안 규칙(docs/firestore-rules-snippet.txt)으로 지켜요.
+// 데이터는 아래 보안 규칙(firebase/firestore-rules-snippet.txt)으로 지켜요.
 export const firebaseConfig = {
   apiKey: "AIzaSyCOy8x5kPeJUUqRUjEHRqckT2ReULEoUac",
   authDomain: "maeum-jogak2.firebaseapp.com",

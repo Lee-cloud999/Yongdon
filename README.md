@@ -4,50 +4,23 @@
 폰 홈 화면에 설치해서 앱처럼 쓰고, 인터넷이 없어도 열려요.
 구글로 로그인하면 여러 기기에서 같은 기록을 볼 수 있어요. (어린이 본인보다 부모님 구글 계정으로 로그인하는 걸 권해요.)
 
+앱 주소: https://lee-cloud999.github.io/Yongdon/
+
 ## 폴더 구성
 
-- `public/` 앱 파일
+- `docs/` 앱 파일 (GitHub Pages가 이 폴더를 보여 줘요)
   - `index.html` 앱 화면과 기록 로직
   - `sync.js` 구글 로그인과 계정 저장 (Firebase Auth, Firestore)
   - `firebase-config.js` Firebase 웹 앱 설정 값
   - `sw.js`, `manifest.webmanifest`, `icons/` 설치와 오프라인용 파일
-- `firebase.json`, `.firebaserc` Firebase Hosting 설정 (별도 사이트 `yongdon-book`)
-- `docs/firestore-rules-snippet.txt` Firestore 보안 규칙에 추가할 내용
+- `firebase/firestore-rules-snippet.txt` Firestore 보안 규칙에 추가한 내용
 
-## 이 앱이 쓰는 Firebase 프로젝트
+## 호스팅과 Firebase
 
-마음조각 앱과 같은 프로젝트(`maeum-jogak2`)를 같이 써요. 서로 섞이지 않게 이렇게 나눴어요.
-
-- 호스팅: 기본 사이트(`maeum-jogak2.web.app`)는 건드리지 않고, 별도 사이트 `yongdon-book`에 올려요.
-- 데이터: Firestore의 `yongdonBooks` 컬렉션에만 저장해요. 문서 하나가 한 사람의 기록이에요.
-- 보안 규칙: 기존 규칙에 한 블록만 추가해요. 덮어쓰지 않아요.
-
-## 처음 한 번만 하기
-
-1. **구글 로그인 켜기**: Firebase 콘솔 > Authentication > 로그인 방법에서 Google이 켜져 있는지 확인해요.
-2. **보안 규칙 추가**: 콘솔 > Firestore Database > 규칙에서 `docs/firestore-rules-snippet.txt`의 블록을 기존 규칙 안에 붙여 넣고 게시해요.
-   (터미널의 `firebase deploy --only firestore:rules`는 쓰지 마세요. 마음조각 앱 규칙이 덮어써져요.)
-3. **호스팅 사이트 만들기**:
-
-```bash
-npm install -g firebase-tools
-firebase login
-firebase hosting:sites:create yongdon-book
-```
-
-   `yongdon-book`이 이미 쓰이고 있으면 다른 이름으로 만들고, `.firebaserc`의 `"yongdon-book"`도 같은 이름으로 바꿔요.
-4. **로그인 허용 주소 추가**: 콘솔 > Authentication > 설정 > 승인된 도메인에 `yongdon-book.web.app`을 추가해요. (사이트 이름을 바꿨다면 그 이름으로요.) 이걸 빼먹으면 로그인 창이 오류로 닫혀요.
-
-## 올리기
-
-이 폴더에서:
-
-```bash
-firebase deploy --only hosting:yongdon
-```
-
-끝나면 `https://yongdon-book.web.app` 주소가 나와요.
-`firebase init`은 실행하지 마세요. 설정 파일이 덮어써져요.
+- 앱 파일은 GitHub Pages에서 보여 줘요. (저장소 Settings > Pages: Branch `main`, 폴더 `/docs`)
+- 로그인과 기록 저장은 마음조각 앱과 같은 Firebase 프로젝트(`maeum-jogak2`)를 같이 써요.
+- 기록은 Firestore의 `yongdonBooks` 컬렉션에만 저장해요. 문서 하나가 한 사람의 기록이에요.
+- Firebase 콘솔 Authentication > 설정 > 승인된 도메인에 `lee-cloud999.github.io`가 들어 있어야 로그인돼요.
 
 ## 폰에 설치하기
 
@@ -56,7 +29,7 @@ firebase deploy --only hosting:yongdon
 
 ## 고쳐서 다시 올릴 때
 
-`public/sw.js` 맨 위의 `CACHE = 'yongdon-v2'`에서 숫자를 올려 주세요(`v3`, `v4`...).
+`docs/sw.js` 맨 위의 `CACHE = 'yongdon-v2'`에서 숫자를 올려 주세요(`v3`, `v4`...).
 그래야 이미 설치한 폰에도 새 버전이 들어가요.
 
 ## 기록은 어디에 저장되나요
