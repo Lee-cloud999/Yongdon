@@ -125,6 +125,7 @@ button { font: inherit; color: inherit; cursor: pointer; }
 .top .sub { font-size: var(--fs-s); color: var(--muted); }
 .today { font-size: var(--fs-s); color: var(--muted); font-weight: 500; }
 
+#authBtn { margin-top: 8px; }
 .skins { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
 .skins .lab { margin-right: 2px; }
 .skins-group { display: flex; gap: 10px; }
@@ -237,6 +238,7 @@ td.bal.neg { color: var(--out); }
     <div>
       <h1>용돈 기록장</h1>
       <p class="sub" id="status"></p>
+      <button type="button" class="ghost sm" id="authBtn" hidden>구글로 로그인</button>
     </div>
     <p class="today" id="todayLabel"></p>
   </header>
@@ -435,8 +437,9 @@ td.bal.neg { color: var(--out); }
   }
 
   /* ---------- saving (this device) ---------- */
-  function setStatus() { $('status').textContent = '기록이 이 기기에 저장돼요.'; }
-  function persist() { state.rev = Date.now(); saveLocal(); }
+  var syncText = '';
+  function setStatus() { $('status').textContent = syncText || '기록이 이 기기에 저장돼요.'; }
+  function persist() { state.rev = Date.now(); saveLocal(); if (hooks.onChange) hooks.onChange(); }
 
   /* ---------- rendering ---------- */
   var shown = 30, pendingDel = null, goalEditing = false, warned = false, msgTimer = null;
@@ -685,6 +688,35 @@ td.bal.neg { color: var(--out); }
   });
   bindMoney($('amt'));
 
+  /* ---------- sync.js (구글 로그인, 계정 저장)가 쓰는 연결 지점 ---------- */
+  // 이 기기의 기록과 계정의 기록을 처음 합칠 때: 기록은 합치고, 예시 기록은 양쪽에 다 있을 때만 남겨요.
+  function mergeStates(local, remoteRaw) {
+    var remote = sanitize(remoteRaw), rids = {}, ids = {}, merged = [];
+    remote.entries.forEach(function (e) { rids[e.id] = true; });
+    local.entries.forEach(function (e) { ids[e.id] = true; if (!e.demo || rids[e.id]) merged.push(e); });
+    remote.entries.forEach(function (e) { if (!ids[e.id] && !e.demo) merged.push(e); });
+    var newer = remote.rev > local.rev ? remote : local;
+    return { v: 1, rev: local.rev, entries: merged.slice(0, MAX_ENTRIES), goal: newer.goal, skin: newer.skin };
+  }
+
+  var hooks = {
+    onChange: null,
+    getState: function () {
+      return JSON.parse(JSON.stringify({ v: 1, rev: state.rev, entries: state.entries, goal: state.goal, skin: state.skin }));
+    },
+    applyRemote: function (o) {
+      var inc = sanitize(o);
+      if (inc.rev > state.rev) { state = inc; saveLocal(); renderAll(); }
+    },
+    mergeRemote: function (o) {
+      state = mergeStates(state, o);
+      persist();
+      renderAll();
+    },
+    setSyncText: function (t) { syncText = t || ''; setStatus(); }
+  };
+  window.YongdonApp = hooks;
+
   /* ---------- start ---------- */
   $('todayLabel').textContent = (now.getMonth() + 1) + '월 ' + now.getDate() + '일 ' + WEEK[now.getDay()] + '요일';
   $('date').value = todayStr;
@@ -697,5 +729,6 @@ td.bal.neg { color: var(--out); }
   }
 })();
 </script>
+<script type="module" src="sync.js"></script>
 </body>
 </html>
