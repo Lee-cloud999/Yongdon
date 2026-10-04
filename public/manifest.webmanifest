@@ -1,0 +1,17 @@
+{
+  "name": "용돈 기록장",
+  "short_name": "용돈 기록장",
+  "description": "받은 돈과 쓴 돈을 적고 남은 돈과 저금 목표를 보는 용돈기입장",
+  "lang": "ko",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#eef6f3",
+  "theme_color": "#123c38",
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
